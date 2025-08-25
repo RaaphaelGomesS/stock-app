@@ -1,8 +1,8 @@
 import axios from "axios";
-import "dotenv/config";
+import { getItem } from "./storage";
 
 const apiInstance = axios.create({
-  baseURL: process.env.API_URL,
+  baseURL: process.env.EXPO_PUBLIC_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
