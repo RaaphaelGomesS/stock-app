@@ -1,9 +1,11 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from "react";
 import { setItem, getItem, removeItem } from "../services/storage";
 import { router } from "expo-router";
+import { useStock } from "./StockContext";
 
 interface AuthContextData {
   token: string | null;
+  isLoading: boolean,
   signIn: (token: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -16,35 +18,32 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { clearSelectedStock } = useStock();
 
   useEffect(() => {
-    async function loadStoragedData() {
-      const storagedToken = await getItem("userToken");
-
-      if (storagedToken) {
-        setToken(storagedToken);
-
-        router.replace("/(stock)/select");
-      } else {
-        router.replace("/(auth)/login");
+    async function loadToken() {
+      const storedToken = await getItem("userToken");
+      if (storedToken) {
+        setToken(storedToken);
       }
+      setIsLoading(false);
     }
-    loadStoragedData();
+    loadToken();
   }, []);
 
   const signIn = async (newToken: string) => {
-    setToken(newToken);
     await setItem("userToken", newToken);
-    router.replace("/(stock)/select");
+    setToken(newToken);
   };
 
   const signOut = async () => {
-    setToken(null);
     await removeItem("userToken");
-    router.replace("/(auth)/login");
+    await clearSelectedStock();
+    setToken(null);
   };
 
-  return <AuthContext.Provider value={{ token, signIn, signOut }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ token, isLoading, signIn, signOut }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {

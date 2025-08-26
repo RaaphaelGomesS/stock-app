@@ -10,10 +10,16 @@ const apiInstance = axios.create({
 
 apiInstance.interceptors.request.use(
   async (config) => {
-    const token = await getItem('userToken');
+    const token = await getItem("userToken");
+    const stockId = await getItem("stockId");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    if (stockId) {
+      config.headers["X-Stock-ID"] = stockId;
+    }
+
     return config;
   },
   (error) => {
