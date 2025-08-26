@@ -1,7 +1,5 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from "react";
 import { setItem, getItem, removeItem } from "../services/storage";
-import { router } from "expo-router";
-import { useStock } from "./StockContext";
 
 interface AuthContextData {
   token: string | null;
@@ -19,7 +17,6 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { clearSelectedStock } = useStock();
 
   useEffect(() => {
     async function loadToken() {
@@ -39,7 +36,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signOut = async () => {
     await removeItem("userToken");
-    await clearSelectedStock();
     setToken(null);
   };
 

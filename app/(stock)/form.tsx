@@ -5,7 +5,6 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -40,13 +39,14 @@ export default function StockFormScreen() {
 
     try {
       if (isEditMode) {
+        console.log(params.id);
         await updateStock(params.id, stockData);
         Alert.alert("Sucesso", "Estoque atualizado com sucesso!");
       } else {
         await createStock(stockData);
         Alert.alert("Sucesso", "Estoque criado com sucesso!");
       }
-      router.back();
+      router.push("/(stock)/select");
     } catch (error) {
       let errorMessage = "Ocorreu um erro ao salvar o estoque.";
       if (isAxiosError(error) && error.response) {

@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from "../context/AuthContext";
 import { StockProvider, useStock } from "../context/StockContext";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
+import { ActivityIndicator } from 'react-native';
 
 function RootLayoutNav() {
   const { token, isLoading: isAuthLoading } = useAuth();
@@ -14,16 +15,30 @@ function RootLayoutNav() {
     const isLoading = isAuthLoading || isStockLoading;
     if (isLoading) return;
 
-    const inGroup = segments[0];
+    const inAuthGroup = segments[0] === "(auth)";
+    const inStockGroup = segments[0] === "(user)";
+    const inAppGroup = segments[0] === "(tabs)";
 
-    if (!token && inGroup !== "(auth)") {
-      router.replace("/login");
-    } else if (token && !stockId && inGroup !== "(stock)") {
-      router.replace("/select");
-    } else if (token && stockId && inGroup !== "(tabs)") {
-      router.replace("/");
+    if (token) {
+      if (stockId) {
+        if (!inAppGroup) {
+          router.replace('/');
+        }
+      } else {
+        if (!inStockGroup) {
+          router.replace('/select');
+        }
+      }
+    } else {
+      if (!inAuthGroup) {
+        router.replace('/login');
+      }
     }
   }, [token, stockId, segments, isAuthLoading, isStockLoading]);
+
+  if (isAuthLoading || isStockLoading) {
+      return <ActivityIndicator style={{flex: 1}} size="large" />;
+  }
 
   return <Stack screenOptions={{ headerShown: false }} />;
 }

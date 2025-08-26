@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, Alert, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
 import { useRouter } from "expo-router";
 import { useStock } from "../../context/StockContext";
-import { getAllStocks } from "../../services/StockService";
+import { getAllStocks, deleteStock } from "../../services/StockService";
 import { Ionicons } from "@expo/vector-icons";
+import { isAxiosError } from "axios";
 
 interface Stock {
   id: number;
@@ -16,17 +17,44 @@ export default function SelectStockScreen() {
   const { selectStock } = useStock();
   const [stocks, setStocks] = useState<Stock[]>([]);
 
-  useEffect(() => {
-    async function fetchStocks() {
-      try {
-        const response = await getAllStocks();
-        setStocks(response.data);
-      } catch (error) {
-        Alert.alert("Erro", "Não foi possível buscar seus estoques.");
-      }
+  const fetchStocks = async () => {
+    try {
+      setStocks(await getAllStocks());
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível buscar seus estoques.");
     }
+  };
+
+  useEffect(() => {
     fetchStocks();
   }, []);
+
+  const handleDeleteStock = (stock: Stock) => {
+    Alert.alert(
+      "Confirmar Exclusão",
+      `Você tem certeza que deseja excluir o estoque "${stock.name}"? Todos os produtos e prateleiras contidos nele serão perdidos.`,
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteStock(stock.id);
+              Alert.alert("Sucesso", "Estoque excluído com sucesso.");
+              fetchStocks();
+            } catch (error) {
+              let errorMessage = "Não foi possível excluir o estoque.";
+              if (isAxiosError(error) && error.response) {
+                errorMessage = error.response.data.message || errorMessage;
+              }
+              Alert.alert("Erro", errorMessage);
+            }
+          },
+        },
+      ]
+    );
+  };
 
   const handleSelectStock = async (id: number) => {
     await selectStock(id);
@@ -53,10 +81,10 @@ export default function SelectStockScreen() {
         </View>
         <View style={styles.cardActions}>
           <TouchableOpacity onPress={() => navigateToForm(item)}>
-            <Ionicons name="pencil" size={20} color="#64748b" />
+            <Ionicons name="pencil" size={20} color="#000000ff" />
           </TouchableOpacity>
-          <TouchableOpacity>
-            <Ionicons name="trash-outline" size={20} color="#64748b" />
+          <TouchableOpacity onPress={() => handleDeleteStock(item)}>
+            <Ionicons name="trash" size={20} color="#000000ff" />
           </TouchableOpacity>
         </View>
       </View>
@@ -68,9 +96,6 @@ export default function SelectStockScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Meus Estoques</Text>
-      </View>
       <FlatList
         data={stocks}
         keyExtractor={(item) => item.id.toString()}
@@ -92,17 +117,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f8fafc",
   },
-  header: {
-    padding: 16,
-    alignItems: "center",
-    backgroundColor: "white",
-    borderBottomWidth: 1,
-    borderBottomColor: "#e2e8f0",
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
   listContainer: {
     padding: 24,
   },
@@ -118,12 +132,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderWidth: 1,
     borderColor: "#e2e8f0",
-
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
-
     elevation: 2,
   },
   cardHeader: {

@@ -3,7 +3,6 @@ import apiInstance from "./api";
 export const getAllStocks = async () => {
   try {
     const response = await apiInstance.get("/stock");
-    console.log(response);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Não foi possível buscar estoques.");
@@ -28,7 +27,7 @@ export const createStock = async (reqData) => {
   }
 };
 
-export const updateStock = async (reqData, stockId) => {
+export const updateStock = async (stockId, reqData) => {
   try {
     const response = await apiInstance.put(`/stock/${stockId}`, reqData);
     return response.data;

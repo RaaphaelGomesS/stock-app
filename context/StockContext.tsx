@@ -29,14 +29,9 @@ export const StockProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loadStock();
   }, []);
 
-  const selectStock = async (id: number | null) => {
-    if (id) {
-      await setItem("stockId", id.toString());
-      setStockId(id);
-    } else {
-      await removeItem("stockId");
-      setStockId(null);
-    }
+  const selectStock = async (id: number) => {
+    await setItem("stockId", id.toString());
+    setStockId(id);
   };
 
   const clearSelectedStock = async () => {
@@ -44,7 +39,11 @@ export const StockProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setStockId(null);
   };
 
-  return <StockContext.Provider value={{ stockId, selectStock, clearSelectedStock, isLoading  }}>{children}</StockContext.Provider>;
+  return (
+    <StockContext.Provider value={{ stockId, selectStock, clearSelectedStock, isLoading }}>
+      {children}
+    </StockContext.Provider>
+  );
 };
 
 export const useStock = () => {
