@@ -32,7 +32,7 @@ export const updateUser = async (userId, userData) => {
     const response = await apiInstance.put(`/user/${userId}`, userData);
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || "Não foi atualizar o usuário.");
+    throw new Error(error.response?.data?.message || "Não foi possível atualizar o usuário.");
   }
 };
 
@@ -40,6 +40,6 @@ export const deleteUser = async (userId) => {
   try {
     await apiInstance.delete(`/user/${userId}`);
   } catch (error) {
-    throw new Error(error.response?.data?.message || "Não foi deletar o usuário.");
+    throw new Error(error.response?.data?.message || "Não foi possível deletar o usuário.");
   }
 };

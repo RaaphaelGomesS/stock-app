@@ -12,6 +12,7 @@ import {
 import { useLocalSearchParams, useRouter, useNavigation } from "expo-router";
 import { updateStock, createStock } from "@/services/StockService";
 import { isAxiosError } from "axios";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function StockFormScreen() {
   const router = useRouter();
@@ -62,32 +63,49 @@ export default function StockFormScreen() {
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
-      <View style={styles.form}>
-        <View>
-          <Text style={styles.label}>Nome do Estoque</Text>
-          <TextInput style={styles.input} placeholder="Ex: Estoque Principal" value={name} onChangeText={setName} />
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoidingContainer}
+        keyboardVerticalOffset={80}
+      >
+        <View style={styles.form}>
+          <View>
+            <Text style={styles.label}>Nome do Estoque</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Ex: Estoque Principal"
+              placeholderTextColor="#9ca3af"
+              value={name}
+              onChangeText={setName}
+            />
+          </View>
+          <View>
+            <Text style={styles.label}>Descrição (Opcional)</Text>
+            <TextInput
+              style={[styles.input, styles.textarea]}
+              placeholder="Ex: Depósito central de produtos"
+              placeholderTextColor="#9ca3af"
+              value={description}
+              onChangeText={setDescription}
+              multiline
+              numberOfLines={4}
+            />
+          </View>
+
+          <TouchableOpacity style={styles.button} onPress={handleSave}>
+            <Text style={styles.buttonText}>{isEditMode ? "Editar estoque" : "Salvar estoque"}</Text>
+          </TouchableOpacity>
         </View>
-        <View>
-          <Text style={styles.label}>Descrição (Opcional)</Text>
-          <TextInput
-            style={[styles.input, styles.textarea]}
-            placeholder="Ex: Depósito central de produtos"
-            value={description}
-            onChangeText={setDescription}
-            multiline
-            numberOfLines={4}
-          />
-        </View>
-      </View>
-      <TouchableOpacity style={styles.button} onPress={handleSave}>
-        <Text style={styles.buttonText}>Salvar Estoque</Text>
-      </TouchableOpacity>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  keyboardAvoidingContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: "#f8fafc",

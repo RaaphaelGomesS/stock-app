@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { getUser, deleteUser } from "../../services/UserService";
 import { useAuth } from "../../context/AuthContext";
 import { isAxiosError } from "axios";
@@ -17,19 +17,23 @@ export default function UserDashboardScreen() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const userData = await getUser();
-        setUser(userData);
-      } catch (error) {
-        Alert.alert("Erro", "Não foi possível carregar os dados do usuário.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchUser();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchUser = async () => {
+        setIsLoading(true);
+        try {
+          const userData = await getUser();
+          setUser(userData);
+        } catch (error) {
+          Alert.alert("Erro", "Não foi possível carregar os dados do usuário.");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchUser();
+    }, [])
+  );
 
   const handleDelete = () => {
     Alert.alert(
@@ -82,17 +86,19 @@ export default function UserDashboardScreen() {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.button}
-          onPress={() => router.push({ pathname: '/(user)/edit', params: { id: user.id.toString(), name: user.name, email: user.email } })}
+          onPress={() =>
+            router.push({
+              pathname: "/(user)/edit",
+              params: { id: user.id.toString(), name: user.name, email: user.email },
+            })
+          }
         >
           <Text style={styles.buttonText}>Atualizar Informações</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.button, styles.deleteButton]}
-          onPress={handleDelete}
-        >
-          <Text style={[styles.buttonText, styles.deleteButtonText]}>Excluir Conta</Text>
+        <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
+          <Text style={[styles.buttonText, styles.buttonText]}>Excluir Conta</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -103,60 +109,56 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    backgroundColor: '#f8fafc',
-    justifyContent: 'space-between',
+    backgroundColor: "#f8fafc"
   },
   loader: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    justifyContent: "center",
+    alignItems: "center",
   },
   errorText: {
     flex: 1,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 50,
     fontSize: 16,
-    color: '#64748b',
+    color: "#64748b",
   },
   fieldContainer: {
     marginBottom: 24,
   },
   label: {
     fontSize: 14,
-    fontWeight: '500',
-    color: '#334155',
+    fontWeight: "500",
+    color: "#334155",
     marginBottom: 8,
   },
   value: {
     fontSize: 18,
-    color: '#0f172a',
-    backgroundColor: '#f1f5f9',
+    color: "#0f172a",
+    backgroundColor: "#f1f5f9",
     padding: 16,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: "#e2e8f0",
   },
   buttonContainer: {
     gap: 16,
   },
   button: {
-    width: '100%',
-    backgroundColor: '#2563eb',
+    width: "100%",
+    backgroundColor: "#2563eb",
     paddingVertical: 16,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buttonText: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   deleteButton: {
-    backgroundColor: '#fee2e2',
+    backgroundColor: "#ef4444",
     borderWidth: 1,
-    borderColor: '#ef4444',
-  },
-  deleteButtonText: {
-    color: '#ef4444',
+    borderColor: "#fee2e2",
   },
 });

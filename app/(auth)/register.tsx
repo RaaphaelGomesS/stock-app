@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import { useRouter, Link } from "expo-router";
 import { register } from "../../services/UserService";
+import { isAxiosError } from "axios";
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -23,7 +24,18 @@ export default function RegisterScreen() {
       await register({ name, email, password });
       router.push("/(auth)/login");
     } catch (error) {
-      Alert.alert("Erro", "Não foi possível realizar o cadastro.");
+      let errorMessage = "Não foi possível atualizar os dados.";
+      if (isAxiosError(error) && error.response) {
+        const errorData = error.response.data;
+        if (Array.isArray(errorData.issues) && errorData.issues.length > 0) {
+          errorMessage = errorData.issues[0].message;
+        } else if (typeof errorData === "object" && errorData !== null && Object.values(errorData).length > 0) {
+          errorMessage = Object.values(errorData)[0] as string;
+        }
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      Alert.alert("Erro na Atualização", errorMessage);
     }
   };
 

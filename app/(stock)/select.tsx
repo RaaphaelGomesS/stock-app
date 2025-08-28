@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback } from "react";
 import { View, Text, FlatList, Alert, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { useStock } from "../../context/StockContext";
 import { getAllStocks, deleteStock } from "../../services/StockService";
 import { Ionicons } from "@expo/vector-icons";
@@ -17,17 +17,20 @@ export default function SelectStockScreen() {
   const { selectStock } = useStock();
   const [stocks, setStocks] = useState<Stock[]>([]);
 
-  const fetchStocks = async () => {
-    try {
-      setStocks(await getAllStocks());
-    } catch (error) {
-      Alert.alert("Erro", "Não foi possível buscar seus estoques.");
-    }
-  };
+  useFocusEffect(
+    useCallback(() => {
+      const fetchStocks = async () => {
+        try {
+          const freshStocks = await getAllStocks();
+          setStocks(freshStocks);
+        } catch (error) {
+          Alert.alert("Erro", "Não foi possível buscar seus estoques.");
+        }
+      };
 
-  useEffect(() => {
-    fetchStocks();
-  }, []);
+      fetchStocks();
+    }, [])
+  );
 
   const handleDeleteStock = (stock: Stock) => {
     Alert.alert(
@@ -42,7 +45,7 @@ export default function SelectStockScreen() {
             try {
               await deleteStock(stock.id);
               Alert.alert("Sucesso", "Estoque excluído com sucesso.");
-              fetchStocks();
+              setStocks((currentStocks) => currentStocks.filter((s) => s.id !== stock.id));
             } catch (error) {
               let errorMessage = "Não foi possível excluir o estoque.";
               if (isAxiosError(error) && error.response) {

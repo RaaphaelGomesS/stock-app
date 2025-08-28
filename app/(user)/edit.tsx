@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  SafeAreaView,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { updateUser } from "../../services/UserService";
@@ -24,7 +25,7 @@ export default function UserEditScreen() {
   useEffect(() => {
     setName((params.name as string) || "");
     setEmail((params.email as string) || "");
-  }, [params]);
+  }, []);
 
   const handleUpdate = async () => {
     if (!name || !email) {
@@ -42,7 +43,7 @@ export default function UserEditScreen() {
     }
 
     try {
-      await updateUser(parseInt(params.id as string), userData);
+      await updateUser(params.id, userData);
       Alert.alert("Sucesso", "Dados atualizados com sucesso!");
       router.back();
     } catch (error) {
@@ -62,45 +63,54 @@ export default function UserEditScreen() {
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
-      <View>
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Nome</Text>
-          <TextInput style={styles.input} value={name} onChangeText={setName} />
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoidingContainer}
+        keyboardVerticalOffset={80}
+      >
+        <View>
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Nome</Text>
+            <TextInput style={styles.input} value={name} onChangeText={setName} />
+          </View>
+
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          </View>
+
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Nova Senha (deixe em branco para não alterar)</Text>
+            <TextInput
+              style={styles.input}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              placeholder="********"
+              placeholderTextColor="#94a3b8"
+            />
+          </View>
         </View>
 
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-        </View>
-
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Nova Senha (deixe em branco para não alterar)</Text>
-          <TextInput
-            style={styles.input}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            placeholder="********"
-            placeholderTextColor="#94a3b8"
-          />
-        </View>
-      </View>
-
-      <TouchableOpacity style={styles.button} onPress={handleUpdate}>
-        <Text style={styles.buttonText}>Salvar Alterações</Text>
-      </TouchableOpacity>
-    </KeyboardAvoidingView>
+        <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+          <Text style={styles.buttonText}>Salvar Alterações</Text>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  keyboardAvoidingContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     padding: 24,

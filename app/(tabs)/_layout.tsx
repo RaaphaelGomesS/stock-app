@@ -4,6 +4,7 @@ import { TouchableOpacity, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
 import { useStock } from "../../context/StockContext";
+import CustomDrawerContent from "@/components/CustomDrawerContent";
 
 export default function AppLayout() {
   const router = useRouter();
@@ -17,7 +18,16 @@ export default function AppLayout() {
 
   return (
     <Drawer
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
+        headerStyle: {
+          backgroundColor: "white",
+        },
+        headerShadowVisible: true,
+        headerTintColor: "#0f172a",
+        headerTitleStyle: {
+          fontWeight: "bold",
+        },
         headerRight: () => (
           <View style={{ flexDirection: "row", marginRight: 15 }}>
             <TouchableOpacity onPress={() => router.push("/(user)")} style={{ marginRight: 15 }}>
@@ -41,10 +51,10 @@ export default function AppLayout() {
         }}
       />
       <Drawer.Screen
-        name="shelves"
+        name="shelf"
         options={{
-          drawerLabel: "Minhas Prateleiras",
-          title: "Minhas Prateleiras",
+          drawerLabel: "Prateleiras",
+          title: "Prateleiras",
           drawerIcon: ({ size, color }: { size: number; color: string }) => (
             <Ionicons name="grid-outline" size={size} color={color} />
           ),
@@ -52,7 +62,6 @@ export default function AppLayout() {
       />
 
       <Drawer.Screen name="product" options={{ drawerItemStyle: { display: "none" }, headerShown: false }} />
-      <Drawer.Screen name="shelf" options={{ drawerItemStyle: { display: "none" }, headerShown: false }} />
       <Drawer.Screen name="(user)" options={{ drawerItemStyle: { display: "none" }, headerShown: false }} />
     </Drawer>
   );
