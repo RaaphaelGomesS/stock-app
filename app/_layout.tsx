@@ -21,6 +21,7 @@ function RootLayoutNav() {
     const inStockGroup = segments[0] === "(stock)";
     const inAppGroup = segments[0] === "(tabs)";
     const inUserGroup = segments[0] === "(user)";
+    const inProductGroup = segments[0] === "(product)";
 
     if (!token) {
       if (!inAuthGroup) {
@@ -36,7 +37,7 @@ function RootLayoutNav() {
     }
 
     if (stockId) {
-      if (!inAppGroup && !inUserGroup) {
+      if (!inAppGroup && !inUserGroup && !inProductGroup) {
         router.replace("/");
       }
       return;

@@ -61,7 +61,7 @@ export default function AppLayout() {
         }}
       />
 
-      <Drawer.Screen name="product" options={{ drawerItemStyle: { display: "none" }, headerShown: false }} />
+      <Drawer.Screen name="product" options={{ drawerItemStyle: { display: "none" }, headerShown: true }} />
       <Drawer.Screen name="(user)" options={{ drawerItemStyle: { display: "none" }, headerShown: false }} />
     </Drawer>
   );

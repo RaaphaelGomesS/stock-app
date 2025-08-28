@@ -12,6 +12,7 @@ import { useState } from "react";
 import { Link } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
 import { login } from "@/services/UserService";
+import { isAxiosError } from "axios";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -34,7 +35,19 @@ export default function LoginScreen() {
         throw new Error("Token não recebido do servidor.");
       }
     } catch (error) {
-      Alert.alert("Falha no Login", "Email ou senha incorretos.");
+      let errorMessage = "Ocorreu um erro inesperado.";
+      if (isAxiosError(error) && error.response) {
+        const errorData = error.response.data;
+        if (Array.isArray(errorData.issues) && errorData.issues.length > 0) {
+          errorMessage = errorData.issues[0].message;
+        } else if (typeof errorData === "object" && errorData !== null && Object.values(errorData).length > 0) {
+          errorMessage = Object.values(errorData)[0] as string;
+        }
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      Alert.alert("Erro", errorMessage);
     }
   };
 
