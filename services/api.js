@@ -1,8 +1,8 @@
 import axios from "axios";
-import "dotenv/config";
+import { getItem } from "./storage";
 
 const apiInstance = axios.create({
-  baseURL: process.env.API_URL,
+  baseURL: process.env.EXPO_PUBLIC_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -10,10 +10,16 @@ const apiInstance = axios.create({
 
 apiInstance.interceptors.request.use(
   async (config) => {
-    const token = await getItem('userToken');
+    const token = await getItem("userToken");
+    const stockId = await getItem("stockId");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    if (stockId) {
+      config.headers["X-Stock-ID"] = stockId;
+    }
+
     return config;
   },
   (error) => {
