@@ -29,7 +29,7 @@ export default function SelectStockScreen() {
       };
 
       fetchStocks();
-    }, [])
+    }, [stocks])
   );
 
   const handleDeleteStock = (stock: Stock) => {

@@ -40,7 +40,6 @@ export default function StockFormScreen() {
 
     try {
       if (isEditMode) {
-        console.log(params.id);
         await updateStock(params.id, stockData);
         Alert.alert("Sucesso", "Estoque atualizado com sucesso!");
       } else {
