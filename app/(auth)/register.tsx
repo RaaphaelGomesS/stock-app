@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { useRouter, Link } from "expo-router";
-import { register } from "../../services/UserService";
+import { register } from "@/services/UserService";
 
 export default function RegisterScreen() {
   const router = useRouter();

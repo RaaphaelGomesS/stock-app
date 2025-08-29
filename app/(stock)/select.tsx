@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, Alert, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
 import { useRouter } from "expo-router";
-import { useStock } from "../../context/StockContext";
-import { getAllStocks } from "../../services/StockService";
+import { useStock } from "@/context/StockContext";
+import { getAllStocks } from "@/services/StockService";
 import { Ionicons } from "@expo/vector-icons";
 
 interface Stock {

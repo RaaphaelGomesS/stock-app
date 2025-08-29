@@ -1,5 +1,7 @@
 {
+  
   "expo": {
+    
     "name": "stock-app",
     "slug": "stock-app",
     "version": "1.0.0",
@@ -8,8 +10,10 @@
     "scheme": "stockapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    
     "ios": {
       "supportsTablet": true
+      
     },
     "android": {
       "adaptiveIcon": {
@@ -36,7 +40,16 @@
       ]
     ],
     "experiments": {
-      "typedRoutes": true
+      "tsconfigPaths": true
+    },
+    "router": {
+      "ignore": [
+        "services/",
+        "context/",
+        "types/"
+      ]
     }
+    
   }
+  
 }

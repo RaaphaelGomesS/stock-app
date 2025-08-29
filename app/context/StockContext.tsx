@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
-import { setItem, getItem, removeItem } from "../services/storage";
+import { setItem, getItem, removeItem } from "@/services/storage";
 
 interface AuthContextData {
   stockId: number | null;

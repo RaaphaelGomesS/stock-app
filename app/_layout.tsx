@@ -1,29 +1,24 @@
+// app/_layout.tsx - VERSÃO SEGURA PARA PULAR LOGIN E TESTAR TELAS
+
 import "react-native-gesture-handler";
-import { AuthProvider, useAuth } from "../context/AuthContext";
-import { StockProvider, useStock } from "../context/StockContext";
-import { Stack, useRouter, useSegments } from "expo-router";
+import { AuthProvider } from "@/context/AuthContext";
+import { StockProvider } from "@/context/StockContext";
+import { Stack, useRouter } from "expo-router";
 import { useEffect } from "react";
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync();
 
 function RootLayoutNav() {
-  const { token, isLoading: isAuthLoading } = useAuth();
-  const { stockId, isLoading: isStockLoading } = useStock();
-  const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
-    const isLoading = isAuthLoading || isStockLoading;
-    if (isLoading) return;
+    // Força o redirecionamento para a lista de prateleiras para teste
+    router.replace("/(product)/shelf");
 
-    const inGroup = segments[0];
-
-    if (!token && inGroup !== "(auth)") {
-      router.replace("/login");
-    } else if (token && !stockId && inGroup !== "(stock)") {
-      router.replace("/select");
-    } else if (token && stockId && inGroup !== "(tabs)") {
-      router.replace("/");
-    }
-  }, [token, stockId, segments, isAuthLoading, isStockLoading]);
+    // Esconde a tela de splash assim que a navegação for comandada
+    SplashScreen.hideAsync();
+  }, []);
 
   return <Stack screenOptions={{ headerShown: false }} />;
 }

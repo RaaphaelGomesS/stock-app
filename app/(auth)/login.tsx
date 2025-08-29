@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { Link } from "expo-router";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { login } from "@/services/UserService";
 
 export default function LoginScreen() {
