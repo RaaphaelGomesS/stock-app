@@ -1,9 +1,10 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, Alert, SafeAreaView } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { useStock } from "@/context/StockContext";
-import { getAllShelvesInStock, Shelf } from "@/services/ShelfService";
-import { Ionicons } from "@expo/vector-icons";
+import { getAllShelvesInStock, deleteShelf, Shelf } from "@/services/ShelfService";
+import ActionCard from "@/components/ActionCard";
+import { FAB } from "@/components/FAB";
 
 export default function ShelfListScreen() {
   const router = useRouter();
@@ -31,11 +32,33 @@ export default function ShelfListScreen() {
     }
   };
 
-  const handleShelfPress = (shelfId: number) => {
+  const handleDelete = (shelf: Shelf) => {
+    Alert.alert(
+      "Confirmar Exclusão",
+      `Tem certeza que deseja excluir a Prateleira ${shelf.id}? Todos os produtos contidos nela serão perdidos.`,
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: async () => {
+            await deleteShelf(shelf.id);
+            fetchShelves(stockId!);
+          },
+        },
+      ]
+    );
+  };
+
+  const handleEdit = (shelf: Shelf) => {
     router.push({
-      pathname: `/(shelf)/${shelfId}`,
-      params: { mode: "view" },
+      pathname: "/form",
+      params: { shelf: JSON.stringify(shelf) },
     });
+  };
+
+  const handleAccess = (shelfId: number) => {
+    router.push(`/(shelf)/${shelfId}`);
   };
 
   if (isLoading) {
@@ -43,72 +66,55 @@ export default function ShelfListScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <FlatList
         data={shelves}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.card} onPress={() => handleShelfPress(item.id)}>
-            <Ionicons name="grid-outline" size={24} color="#3b82f6" />
-            <View style={styles.cardText}>
-              <Text style={styles.cardTitle}>Prateleira {item.id}</Text>
-              <Text style={styles.cardSubtitle}>
-                {item.rows} linhas x {item.columns} colunas
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={24} color="#94a3b8" />
-          </TouchableOpacity>
-        )}
-        ListEmptyComponent={<Text style={styles.emptyText}>Nenhuma prateleira encontrada neste estoque.</Text>}
+        renderItem={({ item }) => {
+          const capacity = item.rows * item.columns;
+          const occupied = item._count?.product ?? 0;
+          return (
+            <ActionCard
+              title={`Prateleira ${item.id}`}
+              onPress={() => handleAccess(item.id)}
+              onEdit={() => handleEdit(item)}
+              onDelete={() => handleDelete(item)}
+            >
+              <View style={styles.infoContainer}>
+                <Text style={styles.infoText}>Destino: {item.destination}</Text>
+                <Text style={styles.infoText}>
+                  Dimensões: {item.rows}x{item.columns}
+                </Text>
+                <Text style={styles.infoText}>
+                  Ocupação: {occupied}/{capacity}
+                </Text>
+              </View>
+            </ActionCard>
+          );
+        }}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>Nenhuma prateleira encontrada. Toque em '+' para adicionar.</Text>
+        }
+        contentContainerStyle={{ padding: 16 }}
       />
-      <TouchableOpacity style={styles.fab} onPress={() => alert("Formulário de prateleira em breve!")}>
-        <Ionicons name="add" size={32} color="white" />
-      </TouchableOpacity>
-    </View>
+      <FAB onPress={() => router.push("/(shelf)/form")} />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f8fafc" },
   centered: { flex: 1, justifyContent: "center", alignItems: "center" },
-  card: {
-    backgroundColor: "white",
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
+  emptyText: { textAlign: "center", marginTop: 50, color: "#64748b" },
+  infoContainer: {
+    paddingVertical: 8,
+    borderTopWidth: 1,
+    borderTopColor: "#f1f5f9",
+    marginTop: 8,
   },
-  cardText: {
-    flex: 1,
-    marginLeft: 16,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  cardSubtitle: {
-    color: "#64748b",
-    marginTop: 2,
-  },
-  emptyText: {
-    textAlign: "center",
-    marginTop: 50,
-    color: "#64748b",
-  },
-  fab: {
-    position: "absolute",
-    bottom: 24,
-    right: 24,
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: "#2563eb",
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 8,
+  infoText: {
+    fontSize: 14,
+    color: "#475569",
+    marginBottom: 4,
   },
 });

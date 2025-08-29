@@ -11,6 +11,7 @@ import {
   Modal,
   Alert,
 } from "react-native";
+import { FAB } from "@/components/FAB";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter, useFocusEffect } from "expo-router";
 import BarcodeScannerModal from "@/components/BarcodeScannerModal";
@@ -176,9 +177,7 @@ export default function HomeScreen() {
         />
       )}
 
-      <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
-        <Ionicons name="add" size={32} color="white" />
-      </TouchableOpacity>
+      <FAB onPress={() => setModalVisible(true)} />
     </SafeAreaView>
   );
 }
@@ -258,18 +257,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 40,
     color: "#64748b",
-  },
-  fab: {
-    position: "absolute",
-    bottom: 24,
-    right: 24,
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: "#2563eb",
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 8,
   },
   modalOverlay: {
     flex: 1,

@@ -44,6 +44,7 @@ export default function ProductFormScreen() {
   const [isTypePickerVisible, setTypePickerVisible] = useState(false);
   const [isLotePickerVisible, setLotePickerVisible] = useState(false);
   const [isShelfPickerVisible, setShelfPickerVisible] = useState(false);
+  const [templateImageUrl, setTemplateImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (params.template) {
@@ -55,6 +56,10 @@ export default function ProductFormScreen() {
       setLoteType(parsedTemplate.loteType as keyof typeof LoteType);
       setLoteAmount(parsedTemplate.loteAmount.toString());
       setWeight(parsedTemplate.weight?.toString() || "");
+
+      if (parsedTemplate.image) {
+        setTemplateImageUrl(`${process.env.EXPO_PUBLIC_API_URL}${parsedTemplate.image}`);
+      }
     }
   }, [params.template]);
 
@@ -73,8 +78,14 @@ export default function ProductFormScreen() {
       const { shelfId, row, column } = params;
       if (shelfId && row && column) {
         const shelf = shelves.find((s) => s.id === parseInt(shelfId as string, 10));
-        if (shelf) setSelectedShelf(shelf);
-        setPosition({ row: parseInt(row as string), column: parseInt(column as string) });
+
+        if (shelf && selectedShelf?.id !== shelf.id) {
+          setSelectedShelf(shelf);
+        }
+        const newPosition = { row: parseInt(row as string), column: parseInt(column as string) };
+        if (position?.row !== newPosition.row || position?.column !== newPosition.column) {
+          setPosition(newPosition);
+        }
       }
     }, [params.shelfId, params.row, params.column, shelves])
   );
@@ -88,6 +99,7 @@ export default function ProductFormScreen() {
     });
     if (!result.canceled) {
       setImage(result.assets[0]);
+      setTemplateImageUrl(null);
     }
   };
 
@@ -96,13 +108,23 @@ export default function ProductFormScreen() {
       Alert.alert("Atenção", "Por favor, selecione uma prateleira primeiro.");
       return;
     }
-    const paramsToPreserve = { template: params.template };
+
+    const currentFormData = {
+      name,
+      ean,
+      description,
+      type,
+      loteType,
+      loteAmount,
+      weight,
+      quantity,
+      validity,
+      template: params.template,
+    };
+
     router.push({
       pathname: `/(shelf)/${selectedShelf.id}`,
-      params: {
-        mode: "select",
-        originalParams: JSON.stringify(paramsToPreserve),
-      },
+      params: { mode: "select" },
     });
   };
 
@@ -124,7 +146,7 @@ export default function ProductFormScreen() {
       type,
       loteType,
       loteAmount: parseInt(loteAmount, 10),
-      weight: weight ? parseFloat(weight.replace(",", ".")) : undefined,
+      weight: weight ? parseFloat(weight.replace(",", ".")) : null,
       quantity: parseInt(quantity, 10),
       validity,
       shelfId: selectedShelf.id,
@@ -133,11 +155,10 @@ export default function ProductFormScreen() {
     };
 
     try {
-      await createProduct(productData, image);
+      const createdProduct = await createProduct(productData, image);
       Alert.alert("Sucesso", "Produto criado com sucesso!");
-      if (router.canGoBack()) {
-        router.back();
-      }
+
+      router.push(`/(product)/${createdProduct.id}`);
     } catch (error: any) {
       let errorMessage = "Não foi possível salvar o produto.";
       if (error.response?.data) {
@@ -154,6 +175,7 @@ export default function ProductFormScreen() {
     }
   };
 
+  const displayImageUri = image?.uri || templateImageUrl;
   const availableShelves = shelves.filter((shelf) => !shelf.full);
   const typeItems = Object.keys(ProductType).map((key) => ({ label: key, value: key }));
   const loteItems = Object.keys(LoteType).map((key) => ({ label: key, value: key }));
@@ -198,8 +220,8 @@ export default function ProductFormScreen() {
         />
 
         <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
-          {image ? (
-            <Image source={{ uri: image.uri }} style={styles.imagePreview} />
+          {displayImageUri ? (
+            <Image source={{ uri: displayImageUri }} style={styles.imagePreview} />
           ) : (
             <>
               <Ionicons name="camera-outline" size={32} color="#64748b" />

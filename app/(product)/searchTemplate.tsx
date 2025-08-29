@@ -20,7 +20,6 @@ export default function SearchTemplateScreen() {
     setIsLoading(true);
     try {
       const data = await searchTemplatesByName(query);
-      console.log(data);
       setResults(data);
     } catch (error) {
       Alert.alert("Erro", "Não foi possível realizar a busca.");

@@ -163,3 +163,12 @@ export const adjustQuantity = async (productId: number, adjustment: number, reas
     throw error;
   }
 };
+
+export const deleteProduct = async (productId: number): Promise<void> => {
+  try {
+    await apiInstance.delete(`/product/${productId}`);
+  } catch (error) {
+    console.error("Erro ao deletar produto:", error);
+    throw error;
+  }
+};

@@ -58,7 +58,7 @@ export default function ShelfGridScreen() {
       });
     } else {
       if (product) {
-        router.push(`/product/${product.id}`);
+        router.push(`/(product)/${product.id}`);
       }
     }
   };

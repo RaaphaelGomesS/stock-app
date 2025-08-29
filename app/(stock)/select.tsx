@@ -5,6 +5,7 @@ import { useStock } from "../../context/StockContext";
 import { getAllStocks, deleteStock } from "../../services/StockService";
 import { Ionicons } from "@expo/vector-icons";
 import { isAxiosError } from "axios";
+import { FAB } from "@/components/FAB";
 
 interface Stock {
   id: number;
@@ -108,9 +109,7 @@ export default function SelectStockScreen() {
           <Text style={styles.subtitle}>Selecione um estoque para começar a gerenciar ou crie um novo.</Text>
         }
       />
-      <TouchableOpacity style={styles.fab} onPress={() => navigateToForm()}>
-        <Ionicons name="add" size={32} color="white" />
-      </TouchableOpacity>
+      <FAB onPress={() => navigateToForm()} />
     </SafeAreaView>
   );
 }
@@ -172,17 +171,5 @@ const styles = StyleSheet.create({
   selectButtonText: {
     color: "#1d4ed8",
     fontWeight: "600",
-  },
-  fab: {
-    position: "absolute",
-    bottom: 24,
-    right: 24,
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: "#2563eb",
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 8,
   },
 });
