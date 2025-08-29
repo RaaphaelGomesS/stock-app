@@ -19,21 +19,29 @@ function RootLayoutNav() {
 
     const inAuthGroup = segments[0] === "(auth)";
     const inStockGroup = segments[0] === "(stock)";
+    const inAppGroup = segments[0] === "(tabs)";
     const inUserGroup = segments[0] === "(user)";
-    
-    if (token) {
-      if (!stockId) {
-        if (inAuthGroup) {
-          router.replace("/");
-        }
-        if (!inStockGroup && !inUserGroup) {
-          router.replace("/(stock)/select");
-        }
-      }
-    } else {
+    const inProductGroup = segments[0] === "(product)";
+    const inShelfGroup = segments[0] === "(shelf)";
+
+    if (!token) {
       if (!inAuthGroup) {
         router.replace("/login");
       }
+      return;
+    }
+    if (!stockId) {
+      if (!inStockGroup && !inUserGroup) {
+        router.replace("/(stock)/select");
+      }
+      return;
+    }
+
+    if (stockId) {
+      if (!inAppGroup && !inUserGroup && !inProductGroup && !inShelfGroup) {
+        router.replace("/");
+      }
+      return;
     }
   }, [token, stockId, segments, isAuthLoading, isStockLoading]);
 

@@ -1,0 +1,15 @@
+export const ProductType = {
+  GENERICO: "GENERICO",
+  LIMPEZA: "LIMPEZA",
+  CONSERVA: "CONSERVA",
+  PERESIVEL: "PERESIVEL",
+  BEBIDAS: "BEBIDAS",
+};
+
+export const LoteType = {
+  UNIDADE: "UNIDADE",
+  CAIXA: "CAIXA",
+  ENGRADADO: "ENGRADADO",
+  PACOTE: "PACOTE",
+  FARDO: "FARDO",
+};
