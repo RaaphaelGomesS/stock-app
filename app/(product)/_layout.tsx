@@ -16,13 +16,6 @@ export default function ProductFlowLayout() {
     >
       <Stack.Screen name="searchTemplate" options={{ title: "Buscar Template" }} />
       <Stack.Screen name="form" options={{ title: "Novo Produto" }} />
-      <Stack.Screen
-        name="selectLocation"
-        options={{
-          title: "Selecionar Posição",
-          presentation: "modal",
-        }}
-      />
     </Stack>
   );
 }

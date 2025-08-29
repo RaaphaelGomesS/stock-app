@@ -123,3 +123,43 @@ export const createProduct = async (productData: any, image: any | null): Promis
     throw error;
   }
 };
+
+export const updateProduct = async (productId: number, productData: any, image: any | null): Promise<Product> => {
+  const formData = new FormData();
+  Object.keys(productData).forEach((key) => {
+    if (productData[key] !== null && productData[key] !== undefined) {
+      formData.append(key, productData[key]);
+    }
+  });
+
+  if (image) {
+    const uriParts = image.uri.split(".");
+    const fileType = uriParts[uriParts.length - 1];
+    const imageData = {
+      uri: image.uri,
+      name: `photo.${fileType}`,
+      type: `image/${fileType}`,
+    };
+    formData.append("productImage", imageData as any);
+  }
+
+  try {
+    const response = await apiInstance.put(`/product/${productId}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao atualizar produto:", error);
+    throw error;
+  }
+};
+
+export const adjustQuantity = async (productId: number, adjustment: number, reason?: string): Promise<Product> => {
+  try {
+    const response = await apiInstance.post(`/product/${productId}/adjust`, { adjustment, reason });
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao ajustar quantidade:", error);
+    throw error;
+  }
+};

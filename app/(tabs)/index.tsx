@@ -75,7 +75,7 @@ export default function HomeScreen() {
         Alert.alert("Nenhum Produto Encontrado", "Não há produtos cadastrados com este EAN.");
         setProducts([]);
       } else if (results.length === 1) {
-        router.push(`/product/${results[0].id}`);
+        router.push(`/(product)/${results[0].id}`);
       } else {
         setProducts(results);
       }
@@ -88,7 +88,7 @@ export default function HomeScreen() {
   };
 
   const handleProductPress = (productId: number) => {
-    router.push(`/product/${productId}`);
+    router.push(`/(product)/${productId}`);
   };
 
   const renderProductItem = ({ item }: { item: Product }) => (
