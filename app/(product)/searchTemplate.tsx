@@ -93,7 +93,7 @@ export default function SearchTemplateScreen() {
         <FlatList
           data={results}
           renderItem={renderItem}
-          keyExtractor={(item) => item.ean.toString()}
+          keyExtractor={(item) => item.ean}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>Nenhum template encontrado.</Text>

@@ -15,7 +15,6 @@ import { getProductById, deleteProduct, adjustQuantity, Product } from "@/servic
 import { Image } from "expo-image";
 import { isAxiosError } from "axios";
 
-// --- Componente para o Modal de Ajuste de Quantidade ---
 const AdjustQuantityModal = ({
   visible,
   onClose,
@@ -34,7 +33,7 @@ const AdjustQuantityModal = ({
       return;
     }
     onSubmit(numericAmount);
-    setAmount(""); // Limpa o input após o envio
+    setAmount("");
   };
 
   return (
@@ -59,7 +58,6 @@ const AdjustQuantityModal = ({
   );
 };
 
-// --- Tela Principal de Detalhes do Produto ---
 export default function ProductDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
@@ -67,7 +65,6 @@ export default function ProductDetailScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAdjustModalVisible, setAdjustModalVisible] = useState(false);
 
-  // useFocusEffect garante que os dados sejam recarregados sempre que a tela ganha foco
   useFocusEffect(
     useCallback(() => {
       if (id) {
@@ -94,7 +91,6 @@ export default function ProductDetailScreen() {
 
   const handleEdit = () => {
     if (!product) return;
-    // Navega para a tela de formulário, passando o ID para entrar em "modo de edição"
     router.push({
       pathname: "/(product)/form",
       params: { productId: product.id.toString() },
@@ -115,7 +111,7 @@ export default function ProductDetailScreen() {
             try {
               await deleteProduct(product.id);
               Alert.alert("Sucesso", "Produto excluído com sucesso.");
-              router.back(); // Volta para a tela anterior
+              router.back();
             } catch (error) {
               Alert.alert("Erro", "Não foi possível excluir o produto.");
             }
@@ -129,7 +125,7 @@ export default function ProductDetailScreen() {
     if (!product) return;
     try {
       const updatedProduct = await adjustQuantity(product.id, adjustment);
-      setProduct(updatedProduct); // Atualiza o estado para refletir a mudança na tela
+      setProduct(updatedProduct);
       Alert.alert("Sucesso", "Quantidade ajustada com sucesso!");
     } catch (error) {
       let errorMessage = "Não foi possível ajustar a quantidade.";

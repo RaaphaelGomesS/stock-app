@@ -50,7 +50,7 @@ export default function ProductFormScreen() {
     if (params.template) {
       const parsedTemplate = JSON.parse(params.template as string) as ProductTemplate;
       setName(parsedTemplate.name);
-      setEan(parsedTemplate.ean.toString());
+      setEan(parsedTemplate.ean);
       setDescription(parsedTemplate.description || "");
       setType(parsedTemplate.type as keyof typeof ProductType);
       setLoteType(parsedTemplate.loteType as keyof typeof LoteType);
@@ -141,7 +141,7 @@ export default function ProductFormScreen() {
 
     const productData = {
       name,
-      ean: parseInt(ean, 10),
+      ean,
       description,
       type,
       loteType,

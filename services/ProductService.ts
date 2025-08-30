@@ -17,7 +17,7 @@ export interface Product {
 }
 
 export interface ProductTemplate {
-  ean: number;
+  ean: string;
   name: string;
   description: string | null;
   type: string;
@@ -74,6 +74,7 @@ export const searchTemplatesByName = async (name: string): Promise<ProductTempla
 export const searchProductsByEan = async (ean: string): Promise<Product[]> => {
   try {
     const response = await apiInstance.get(`/product/ean/${ean}`);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Erro ao buscar produtos por EAN:", error);
